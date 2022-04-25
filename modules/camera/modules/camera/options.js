@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native"
+import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
   heading: {
@@ -9,16 +9,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center"
   },
+  text: {
+    fontSize: 28,
+    color: "#ffffff",
+    width: "100%"
+  },
   icon: {
     width: 18,
-    height: 16,
+    height: 16
   },
   touchableopacity: {
-    padding: 5,
+    padding: 5
   },
   scrollview: {
     flex: 1,
-    padding: 20,
+    padding: 20
   },
   header: {
     color: "#fff",
@@ -32,7 +37,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#000",
     padding: 20,
     borderRadius: 35,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2
@@ -46,10 +51,6 @@ const styles = StyleSheet.create({
   },
   card: {
     padding: 10
-  },
-  text: {
-    fontSize: 28,
-    color: "#ffffff"
   },
   author: {
     fontSize: 18,
@@ -65,9 +66,9 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 16
   }
-})
+});
 
 export default {
-  buttonText: '+ Take Photo',
-  styles: styles,
+  buttonText: "+ Take Photo",
+  styles: styles
 };

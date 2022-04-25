@@ -1,40 +1,40 @@
-import { Alert, Platform } from "react-native"
-import * as Permissions from "react-native-permissions"
-import ImagePicker from "react-native-image-crop-picker"
-import axios from "axios"
+import { Alert, Platform } from "react-native";
+import * as Permissions from "react-native-permissions";
+import ImagePicker from "react-native-image-crop-picker";
+import axios from "axios";
 
 async function askPermission(permission) {
   try {
-    const status = await Permissions.check(permission)
+    const status = await Permissions.check(permission);
     if (status !== Permissions.RESULTS.GRANTED) {
-      //if not already granted then ask
-      const status = await Permissions.request(permission)
+      // if not already granted then ask
+      const status = await Permissions.request(permission);
       if (status !== Permissions.RESULTS.GRANTED) {
-        //user denied on ask
-        return false
+        // user denied on ask
+        return false;
       }
     }
-    return true
+    return true;
   } catch (err) {
-    console.log("askPermission err", err, " for permission", permission)
-    return false
+    console.log("askPermission err", err, " for permission", permission);
+    return false;
   }
 }
 
 export async function getCameraGalleryPermissions() {
-  //need both permisisons for camera, so ask both on galery and camera
+  // need both permisisons for camera, so ask both on galery and camera
   const { PERMISSIONS } = Permissions;
   let permission = Platform.select({
     android: PERMISSIONS.ANDROID.CAMERA,
     ios: PERMISSIONS.IOS.CAMERA
-  })
+  });
 
-  let cameraPermissions = await askPermission(permission)
+  const cameraPermissions = await askPermission(permission);
   permission = Platform.select({
     android: PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
     ios: PERMISSIONS.IOS.PHOTO_LIBRARY
-  })
-  let storagePermissions = await askPermission(permission)
+  });
+  const storagePermissions = await askPermission(permission);
   return cameraPermissions && storagePermissions;
 }
 
@@ -46,7 +46,7 @@ function permissionsAlert() {
       {
         text: "Cancel",
         onPress: () => {
-          console.log("Cancel Pressed")
+          console.log("Cancel Pressed");
         },
         style: "cancel"
       },
@@ -55,85 +55,85 @@ function permissionsAlert() {
         onPress: () => {
           Permissions.openSettings().catch(() =>
             console.log("cannot open settings")
-          )
+          );
         }
       }
     ]
-  )
+  );
 }
 
 export const pickFromGallery = async () => {
-  let havePermission = await getCameraGalleryPermissions()
+  const havePermission = await getCameraGalleryPermissions();
   if (!havePermission) {
-    permissionsAlert()
-    return false
+    permissionsAlert();
+    return false;
   } else {
     try {
-      let res = await ImagePicker.openPicker({
+      const res = await ImagePicker.openPicker({
         width: 300,
         height: 300,
         cropping: true,
         mediaType: "photo",
         includeBase64: true
-      })
-      return res
+      });
+      return res;
     } catch (err) {
-      console.log("pickFromGallery err", err)
-      return false
+      console.log("pickFromGallery err", err);
+      return false;
     }
   }
-}
+};
 
 export const pickFromCamera = async mediaType => {
-  let havePermission = await getCameraGalleryPermissions()
+  const havePermission = await getCameraGalleryPermissions();
   if (!havePermission) {
-    permissionsAlert()
-    return false
+    permissionsAlert();
+    return false;
   } else {
     try {
-      let res = await ImagePicker.openCamera({
+      const res = await ImagePicker.openCamera({
         width: 300,
         height: 300,
         cropping: true,
         mediaType: mediaType,
         includeBase64: true
-      })
-      return res
+      });
+      return res;
     } catch (err) {
-      console.log("pickFromCamera err", err)
-      return false
+      console.log("pickFromCamera err", err);
+      return false;
     }
   }
-}
+};
 
-const APP_PLATFORM = "Mobile"
+const APP_PLATFORM = "Mobile";
 
 export const request = axios.create({
   headers: {
     app_platform: APP_PLATFORM,
     app_version: 1
-  },
-})
+  }
+});
 
 export async function apiPost(endpoint, data) {
   try {
-    let res = await request.post(endpoint, data);
+    const res = await request.post(endpoint, data);
     if (res) {
       return res;
     }
   } catch (error) {
-    console.log("API POST ERROR endpoint:", endpoint, " || error:", error)
+    console.log("API POST ERROR endpoint:", endpoint, " || error:", error);
   }
 }
 
 export const uploadImage = async (response, options) => {
-  const BASE_URL = options.url
-  let data = new FormData()
-  data.append('image', {
+  const BASE_URL = options.url;
+  const data = new FormData();
+  data.append("image", {
     name: `rnd-${response.path}`,
     type: "image/jpg",
     uri: response.path,
-    data: response.data,
-  })
-  let res = await apiPost(BASE_URL + "/modules/camera/upload_image/", data)
+    data: response.data
+  });
+  await apiPost(BASE_URL + "/modules/camera/upload_image/", data);
 };
