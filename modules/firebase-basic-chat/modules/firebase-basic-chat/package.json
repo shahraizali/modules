@@ -1,0 +1,17 @@
+{
+    "name": "@modules/firebase-basic-chat",
+    "version": "1.0.1",
+    "description": "firebase-basic-chat",
+    "private": true,
+    "main": "index.js",
+    "author": "Crowdbotics",
+    "license": "ISC",
+    "dependencies": {
+        
+    },
+    "x-dependencies": {
+        "@react-native-firebase/app": "^15.1.1",
+        "@react-native-firebase/database": "^15.1.1",
+        "react-native-keyboard-aware-scroll-view": "*"
+    }
+}
