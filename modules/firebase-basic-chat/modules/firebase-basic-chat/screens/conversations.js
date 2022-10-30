@@ -2,86 +2,20 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, Image, TextInput, Dimensions, useWindowDimensions } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { SceneMap, TabView, TabBar } from "react-native-tab-view";
-import { chatListRequest, getMatchesRequest } from "../../api/redux";
+import { chatListRequest } from "../../api/redux";
 import { useDispatch } from "react-redux";
 import ProfileIcon from "../../components/ProfileIcon";
 
 const deviceWidth = Dimensions.get("window").width;
 
-const renderTabBar = props => (
-  <TabBar
-    {...props}
-    indicatorStyle={styles.indicator}
-    indicatorContainerStyle={styles.indicatorContainer}
-    labelStyle={styles.label}
-    style={styles.tab}
-  />
-);
-
-const FirstRoute = ({ matches, navigation, query, setQuery }) => (
-  <View style={styles.container}>
-    <HeaderSectionComponent query={query} setQuery={setQuery}></HeaderSectionComponent>
-      <View style={{
-        width: 30,
-        height: 30,
-        borderRadius: 180 / 2,
-        backgroundColor: "black",
-        position: "absolute",
-        bottom: 25,
-        alignSelf: "flex-end",
-        left: 350
-      }} />
-      <View style={styles.anything}>
-        <KeyboardAwareScrollView>
-        <View style={styles.EveronesConversation}>
-          {matches.length > 0 && matches.map((message, index) => {
-            return (
-              <TouchableOpacity key={index} style={styles.messageContainer} onPress={() => { navigation.navigate("ChatDetails", { userId: message?.id }); }}>
-                <ProfileIcon image_src={message?.profile_info?.profile_image} />
-                <View style={styles.messageTextContainer}>
-                  <Text style={styles.messageSenderName}>{message?.name}</Text>
-                </View>
-              </TouchableOpacity>
-            );
-          })}
-
-        </View>
-        </KeyboardAwareScrollView>
-      </View>
-  </View>
-);
-
-const SecondRoute = ({ messages, navigation, query, setQuery }) => (
-  <View style={styles.container}>
-    <HeaderSectionComponent message={"Enter"} setQuery={setQuery} query={query}></HeaderSectionComponent>
-    <View style={styles.anything}>
-      <KeyboardAwareScrollView>
-        <NameConversations messages={messages} navigation={navigation}></NameConversations>
-      </KeyboardAwareScrollView>
-    </View>
-  </View>
-);
-
 export default function Conversations(props) {
   const { navigation } = props;
 
-  const layout = useWindowDimensions();
-
-  const [index, setIndex] = React.useState(0);
-  const [routes] = React.useState([
-    { key: "first", title: "New Matches" },
-    { key: "second", title: "Conversations" }
-
-  ]);
-
   console.log("navigation", navigation);
-  const [matches, setMatches] = useState([]);
   const [messages, setMessages] = useState([]);
   const [allMessages, setAllMessages] = useState([]);
   const dispatch = useDispatch();
   const [query, setQuery] = useState("");
-  const [query2, setQuery2] = useState("");
 
   useEffect(() => {
     if (query.length > 0) {
@@ -98,28 +32,17 @@ export default function Conversations(props) {
         setAllMessages(res.payload);
       }
     );
-
-    dispatch(getMatchesRequest()).then(
-      (res) => {
-        setMatches(res.payload);
-      }
-    );
   }, []);
 
-  const renderScene = SceneMap({
-    first: () => <FirstRoute navigation={navigation} matches={matches} query={query2} setQuery={setQuery2} />,
-    second: () => <SecondRoute navigation={navigation} messages={messages} query={query} setQuery={setQuery} />
-  });
-
   return (
-    <TabView
-      navigationState={{ index, routes }}
-      renderScene={renderScene}
-      onIndexChange={setIndex}
-      initialLayout={{ width: layout.width }}
-      renderTabBar={renderTabBar}
-      style={{ backgroundColor: "white" }}
-      />
+    <View style={styles.container}>
+    <HeaderSectionComponent message={"Enter"} setQuery={setQuery} query={query}></HeaderSectionComponent>
+    <View style={styles.anything}>
+      <KeyboardAwareScrollView>
+        <NameConversations messages={messages} navigation={navigation}></NameConversations>
+      </KeyboardAwareScrollView>
+    </View>
+  </View>
   );
 }
 

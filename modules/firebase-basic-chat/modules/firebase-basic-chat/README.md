@@ -1,5 +1,8 @@
 # firebase-basic-chat React native specs
 
+## Modules Dependencies
+  1. Authentication (Login Module, Social Login)
+
 ## Android specific Configs
 ---
 
