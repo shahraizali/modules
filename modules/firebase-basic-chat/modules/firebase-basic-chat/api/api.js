@@ -12,22 +12,23 @@ const authAPI = axios.create({
 
 
 async function apiChatListRequest(payload) {
-  const t = await storage.getToken();
-  return authAPI.get("/modules/chat/chat_list/", {
+  const t = await storage.getToken(); 
+  return authAPI.get("/modules/firebase-basic-chat/chat_list/", {
     headers: { Authorization: `Token ${t}` }
   });
 }
 
 async function apiChatDetailsRequest(payload) {
   const t = await storage.getToken();
-  return authAPI.get(`/modules/chat/chat_details/${payload?.id}/`, {
+  return authAPI.get(`/modules/firebase-basic-chat/chat_details/${payload?.id}/`, {
     headers: { Authorization: `Token ${t}` }
   });
 }
 
+cascasca
 async function apiSendMessageRequest(payload) {
   const t = await storage.getToken();
-  return authAPI.post("/modules/chat/send_message/", payload, {
+  return authAPI.post("/modules/firebase-basic-chat/send_message/", payload, {
     headers: { Authorization: `Token ${t}` }
   });
 }

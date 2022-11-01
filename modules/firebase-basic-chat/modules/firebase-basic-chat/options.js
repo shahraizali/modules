@@ -12,5 +12,7 @@ const styles = StyleSheet.create({
 });
 
 export default {
-  styles: styles
+  styles: styles,
+  enableFirebase: false,
+  pollingInterval: 1000,
 };

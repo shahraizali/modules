@@ -2,16 +2,14 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, Image, TextInput, Dimensions, useWindowDimensions } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { chatListRequest } from "../../api/redux";
+import { chatListRequest } from "../api/redux";
 import { useDispatch } from "react-redux";
-import ProfileIcon from "../../components/ProfileIcon";
+import ProfileIcon from "../components/ProfileIcon";
 
 const deviceWidth = Dimensions.get("window").width;
 
 export default function Conversations(props) {
   const { navigation } = props;
-
-  console.log("navigation", navigation);
   const [messages, setMessages] = useState([]);
   const [allMessages, setAllMessages] = useState([]);
   const dispatch = useDispatch();
@@ -258,7 +256,7 @@ const HeaderSectionComponent = ({ message, query, setQuery }) => {
             placeholder={"enter"} style={styles.usernameheader}></TextInput>
       </View>
       <View style={styles.headerRightIcon}>
-        <Image style={styles.SearchImage} source={require("./assets/search.png")}></Image>
+        <Image style={styles.SearchImage} source={require("../assets/search.png")}></Image>
       </View>
     </View>
   );
@@ -267,9 +265,9 @@ const HeaderSectionComponent = ({ message, query, setQuery }) => {
 const NameConversations = ({ messages, navigation }) => {
   return (
     <View style={styles.EveronesConversation}>
-      {messages.length > 0 && messages.map((message, index) => {
+      {messages && messages.length > 0 && messages.map((message, index) => {
         return (
-          <TouchableOpacity style={styles.messageContainer} key={index} onPress={() => { navigation.navigate("ChatDetails", { userId: message?.id }); }}>
+          <TouchableOpacity style={styles.messageContainer} key={index} onPress={() => { navigation.navigate("chatDetails", { userId: message?.id }); }}>
             <ProfileIcon />
             <View style={styles.messageTextContainer}>
               <Text style={styles.messageSenderName}>{message?.name}</Text>

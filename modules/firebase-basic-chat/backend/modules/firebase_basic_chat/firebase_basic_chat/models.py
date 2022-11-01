@@ -40,15 +40,15 @@ class ChatMessage(models.Model):
 
 
 # # get chatMessage signal
-# @receiver(post_save, sender=ChatMessage)
-# def chatMessage_post_save(sender, instance, created, **kwargs):
-#     # send signal to update chat
-#     if created:
-#         from firebase_admin import db
-#         ref = db.reference("matches/{}-{}/".format(instance.sender.id, instance.receiver.id))
-#         obj = {
-#             'id': instance.id,
-#         }
-#         ref.set(obj)
+@receiver(post_save, sender=ChatMessage)
+def chatMessage_post_save(sender, instance, created, **kwargs):
+    # send signal to update chat
+    if created:
+        from firebase_admin import db
+        ref = db.reference("matches/{}-{}/".format(instance.sender.id, instance.receiver.id))
+        obj = {
+            'id': instance.id,
+        }
+        ref.set(obj)
 
         
