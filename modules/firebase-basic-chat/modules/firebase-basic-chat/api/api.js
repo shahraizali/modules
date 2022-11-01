@@ -25,7 +25,6 @@ async function apiChatDetailsRequest(payload) {
   });
 }
 
-cascasca
 async function apiSendMessageRequest(payload) {
   const t = await storage.getToken();
   return authAPI.post("/modules/firebase-basic-chat/send_message/", payload, {
