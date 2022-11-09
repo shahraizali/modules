@@ -1,15 +1,28 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions, status
+from rest_framework.viewsets import ViewSet
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
+
 import stripe
+
+from .models import AppleIAPProduct
+from .services.ApplePaymentService import ApplePaymentService
 from .services.StripeService import StripeService
+from .serializers import AppleIAPProductSerializer, appleIAPSerializer
+from .services.StripeService import StripeService
+from rest_framework import generics
 
 class PaymentSheetView(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
+        """
+        Creates paymentIntent and Ephemeral key for the customer. If no customer exists, first creates one.
+        :param request: Contains a user object which has stripe_profile object containing id of the stripe customer.
+        """
         user = request.user
         stripe_profile = user.stripe_profile
         if not stripe_profile.stripe_cus_id:
@@ -29,6 +42,10 @@ class GetStripePaymentsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
+        """
+        Returns array of PaymentIntents for a stripe customer.
+        :param request: Contains a user object which has stripe_profile object containing id of the stripe customer whose payment history is to be returned.
+        """
         user = request.user
         stripe_profile = user.stripe_profile
         if not stripe_profile.stripe_cus_id:
@@ -48,6 +65,10 @@ class GetPaymentMethodsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
+        """
+        Returns returns a list of PaymentMethods attached to the customer's StripeAccount.
+        :param request: Contains a user object which has stripe_profile object containing id of the stripe customer whose PaymentMethods are to be returned.
+        """
         user = request.user
         stripe_profile = user.stripe_profile
         if not stripe_profile.stripe_cus_id:
@@ -60,3 +81,33 @@ class GetPaymentMethodsView(APIView):
             "data": history
         }
         return Response(response, status=status.HTTP_200_OK)
+
+class AppleIAProductsView(generics.ListAPIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.AllowAny]
+    queryset = AppleIAPProduct.objects.filter(is_active=True)
+    serializer_class = AppleIAPProductSerializer
+
+
+class AppleIAPayment(ViewSet):
+    serializer_class = appleIAPSerializer
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request):
+        """
+        Verify an Apple receipt.
+        """
+        serializer = self.serializer_class(data=request.data)
+        data = None
+        if serializer.is_valid(raise_exception=True):
+            verify_receipt, success = ApplePaymentService.verify_apple_receipt(request.data)
+            print('verify_receipt', verify_receipt)
+            if success:
+                data = "success"
+            else:
+                data = "fail"
+        return Response({
+            'success': True,
+            'result': data,
+        }, status=status.HTTP_200_OK)
