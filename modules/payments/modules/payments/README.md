@@ -135,20 +135,6 @@ export const localOptions = {
 };
 ```
 
-2. in modules/payments/api.js
-
-Update the token to make the api call with Authorization
-```
-const token = "Token 676364403988909cde7f501aa2efeaf9ca30d18c";
-```
-# Server
-
-## Update token in modules/payments/api.js
-Update your django authorization token to make authorized api calls.
-```
-const token = "Token c47e419eb3....";
-```
-
 ## Update stripePublishKey in modules/payments/options.js
 Update your stripePublishKey.
 ```

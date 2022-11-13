@@ -1,17 +1,19 @@
 import { getGlobalOptions } from "@options";
 
+import { storage } from "@modules/storage";
+
 const global = getGlobalOptions();
 const BASE_URL = global.url; // change your BASE_URL in `options/options.js` to edit this value
-const token = "Your token here";
 // FIXME: Make this call with Authorization
 // Right now there is no login in this module but when this feture will be added
 // there will be a user profile added make changes accordingly
 export const fetchPaymentSheetParams = async (amount) => {
+  var t = await storage.getToken();
   const response = await fetch(`${BASE_URL}/modules/payments/payment_sheet/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: token
+      Authorization: `Token ${t}`
     },
     body: JSON.stringify({
       cents: parseFloat(amount) * 100
@@ -28,11 +30,12 @@ export const fetchPaymentSheetParams = async (amount) => {
 };
 
 export const fetchPaymentHistory = async () => {
+  var t = await storage.getToken();
   const response = await fetch(`${BASE_URL}/modules/payments/get_payments_history/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: token
+      Authorization: `Token ${t}`
     }
   });
   const resp = await response.json();
@@ -40,11 +43,12 @@ export const fetchPaymentHistory = async () => {
 };
 
 export const verifyAppleIAPReceipt = async (jsonData) => {
+  var t = await storage.getToken();
   const response = await fetch(`${BASE_URL}/modules/payments/apple/verify/receipt/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: token
+      Authorization: `Token ${t}`
     },
     body: JSON.stringify(jsonData)
   });
@@ -53,11 +57,12 @@ export const verifyAppleIAPReceipt = async (jsonData) => {
 };
 
 export const fetchAppleIAPProducts = async () => {
+  var t = await storage.getToken();
   const response = await fetch(`${BASE_URL}/modules/payments/apple/get_products/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: token
+      Authorization: `Token ${t}`
     }
   });
   const resp = await response.json();
