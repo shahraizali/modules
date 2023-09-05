@@ -21,3 +21,14 @@ OR from your network settings this is your local IP of computer.
 
 
 Add the IP above e.g. `192.168.1.11:8000` to `options/options.js` for mobile to connect to your local server
+
+## Api Table
+List of api's endpoints with params needed for these apis.
+
+| Api Name                       | Param        | Description                                                    |
+| ------------------------------ |:------------:|:---------------------------------------------------------------|
+| `/modules/payments/get_payments_history/`| -No Params-  | Returns of all the payments done by the users. |
+| `/modules/payments/payment_sheet/`|  object `{amount, cus_id}`  |Takes object containing amount, cus_id and returns an array containing history of all the payments done by the users. |
+| `/modules/payments/apple/get_products/`| -No Params- | Returns list of all the available In-App products.|
+| `/modules/payments/apple/verify/receipt/`| object  | Takes object containing in-app purchase reciept. Verfiyes the reciept wether the purchase was successfull or not.|
+
