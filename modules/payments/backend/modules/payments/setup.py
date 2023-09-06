@@ -14,7 +14,7 @@ setup(
     version="0.1",
     packages=["payments"],
     install_requires=[
-        "stripe==2.26.0",
+        "stripe==2.60.0",
     ],
     cmdclass={"build": BuildCommand},
 )
