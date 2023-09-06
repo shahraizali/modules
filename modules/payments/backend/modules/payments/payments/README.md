@@ -2,7 +2,9 @@
 
 ## Module description
 
-Django payments module allow user to pay through the stripe payment. It helps user to accept payments and send payouts globally. Module Creates PaymentIntent that encapsulates details about the transaction, such as the supported payment methods. Creates and stores stripe profile for each stripe user. 
+Payments module allow user to select a subscription and pay through the stripe payment and Select Apple In-app Purchase
+and verify payments. It helps user to accept payments, send payouts globally and users can select subscription plan and
+price, and click on the subscribe.
 
 The following are the scope features of this module:
 
@@ -11,6 +13,12 @@ The following are the scope features of this module:
 - Get Payments history
 - Get Payments methods
 - Create payment intent sheet
+- Get the details of subscription plans
+- Create the subscription plans (Free, Monthly, Annual)
+- Cancel the subscribed plans
+- Create Apple In-App products
+- Get Apple In-App products
+- Verify Apple In-App product payments
 
 ## Features
 
@@ -24,8 +32,8 @@ The following are the scope features of this module:
 ```dotenv
 STRIPE_SECRET_KEY='sk_test_xxxxxxx'
 CONNECTED_STRIPE_ACCOUNT_ID='acct_xxxxx'
+STRIPE_WEBHOOK_SECRET='whsec_xxxxxxx'
 ```
-
 
 ## 3rd party setup
 
@@ -44,15 +52,22 @@ Dependencies used:
 
 - [stripe==2.60.0](https://pypi.org/project/stripe/)
 
-
 ## API details
 
-| Api Name                       |           Param           | Description                                                                                                           |
-| ------------------------------ |:-------------------------:|:----------------------------------------------------------------------------------------------------------------------|
-| `/modules/payments/get_payments_history/`|        -No Params-        | Returns of all the payments done by the users.                                                                        |
-| `/modules/payments/create_payment_intent_sheet/`| object `{amount, cus_id}` | Takes object containing amount, cus_id and returns an array containing history of all the payments done by the users. |
-| `/modules/payments/get_payments_methods/`|        -No Params-        | Returns an array containing the avaliable payments methods done by the users.                                         |
+| Api Name                                         |                                        Param                                        | Description                                                                                                                   |
+|--------------------------------------------------|:-----------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------|
+| `/modules/payments/get_payments_history/`        |                                     -No Params-                                     | Returns of all the payments done by the users.                                                                                |
+| `/modules/payments/create_payment_intent_sheet/` |                              object `{amount, cus_id}`                              | Takes object containing amount, cus_id and returns an array containing history of all the payments done by the users.         |
+| `/modules/payments/get_payments_methods/`        |                                     -No Params-                                     | Returns an array containing the available payments methods done by the users.                                                 |
+| `/modules/payments/buy_subscription_plan/`       |                             body_params  `'price_tier'`                             | Takes `price_tier` which is price id from the selected plan. Buys that selected plan against `price_tier`.                    |
+| `/modules/payments/get_subscription_plans/`      |                                          -                                          | Returns the collection/list of all the `subscription_plans` that can be subscribed by a user.                                 |
+| `/modules/payments/cancel_subscription_plan/`    |                                body_params `sub_id`                                 | Takes subscription id `sub_id`  of subscription plan is to be cancelled. Deletes the  subscription plan against the `sub_id`. |
+| `/modules/payments/apple/get_products/`          |                     body_params `{name, product_id, is_active}`                     | Create an object of apple in-app purchase product and returns list of available products.                                     |
+| `/modules/payments/apple/verify/receipt/`        | body_params `{productId, transactionDate, transactionId, transactionReceipt, user}` | Takes Apple in-app object and verify payment receipts.                                                                        |
 
 ### Module Specifications
-Here is the [Module Specification Document](https://docs.google.com/document/d/1dYIXsSBkNeicBd30648KukkU58tH_kSloPf2vf9x1nM/edit?usp=sharing), which provides more information about the module's actual intentions.
+
+Here is
+the [Module Specification Document](https://docs.google.com/document/d/1dYIXsSBkNeicBd30648KukkU58tH_kSloPf2vf9x1nM/edit?usp=sharing),
+which provides more information about the module's actual intentions.
 
