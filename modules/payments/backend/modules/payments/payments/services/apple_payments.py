@@ -1,12 +1,21 @@
 import json
 
+import environ
 import requests
+
+env = environ.Env()
 
 
 class ApplePaymentService:
-    APPLE_PRODUCT_VERIFY_URL = 'https://buy.itunes.apple.com/verifyReceipt'
-    APPLE_SANDBOX_VERIFY_URL = 'https://sandbox.itunes.apple.com/verifyReceipt'
-    SANDBOX_STATUS_CODE = 21007
+
+    def __init__(self):
+        self.APPLE_PRODUCT_VERIFY_URL = env.str('APPLE_PRODUCT_VERIFY_URL', '')
+        self.APPLE_RECEIPT_VERIFY_URL = env.str('APPLE_RECEIPT_VERIFY_URL', '')
+        self.APPLE_SANDBOX_MODE = env.bool('APPLE_SANDBOX_MODE', False)
+        self.SUCCESS_STATUS_CODE = 21007
+
+        if self.APPLE_SANDBOX_MODE:
+            self.APPLE_RECEIPT_VERIFY_URL = 'https://sandbox.itunes.apple.com/verifyReceipt'
 
     @classmethod
     def validate_receipt_data(cls, receipt_data):
@@ -16,19 +25,18 @@ class ApplePaymentService:
         # TODO: add more validation
         return is_valid
 
-    @classmethod
-    def verify_apple_receipt(cls, receipt_data):
+    def verify_apple_receipt(self, receipt_data):
         """
         Verify an Apple receipt.
         """
         # validate receipt
-        if not cls.validate_receipt_data(receipt_data):
+        if not self.validate_receipt_data(receipt_data):
             return False, False
 
         receipt_json = json.dumps({"receipt-data": receipt_data["transactionReceipt"]})
 
         # verify receipt
-        verify_url = cls.APPLE_PRODUCT_VERIFY_URL
+        verify_url = self.APPLE_PRODUCT_VERIFY_URL
         response = requests.request(
             method='POST',
             url=verify_url,
@@ -37,9 +45,9 @@ class ApplePaymentService:
         )
         if response.status_code == 200:
             res_json = response.json()
-            if res_json.get('status', None) == cls.SANDBOX_STATUS_CODE:
+            if res_json.get('status') == self.SUCCESS_STATUS_CODE:
                 print("now calling sandbox")
-                verify_url = cls.APPLE_SANDBOX_VERIFY_URL
+                verify_url = self.APPLE_RECEIPT_VERIFY_URL
                 response = requests.request(
                     method='POST',
                     url=verify_url,
@@ -53,4 +61,5 @@ class ApplePaymentService:
             else:
                 return res_json, False
                 # failure
+        print("There is problem with service.", response.json())
         return False, False

@@ -7,6 +7,14 @@ from modules.payments.payments.models import StripeUserProfile
 
 env = environ.Env()
 
+LOG_EVENT_TYPES = [
+    "payment_intent.created",
+    "customer.subscription.created",
+    "invoice.paid",
+    "invoice.payment_succeeded",
+    "customer.subscription.updated"
+]
+
 
 class StripeSubStatus:
     ACTIVE = 'active'
@@ -23,11 +31,7 @@ class StripeSubStatus:
 class StripeSubscriptionService:
     stripe.api_key = env.str("STRIPE_SECRET_KEY", "")
     WEBHOOK_SECRET = env.str("STRIPE_WEBHOOK_SECRET", "")
-    LOG_EVENT_TYPES = [
-        "payment_intent.created", "customer.subscription.created",
-        "invoice.paid", "invoice.payment_succeeded",
-        "customer.subscription.updated"
-    ]
+    STRIPE_SESSION_RETURN_URL = env.str("STRIPE_SESSION_RETURN_URL", "https://example.com/account")
 
     @classmethod
     def get_products(cls):
@@ -89,7 +93,7 @@ class StripeSubscriptionService:
         """
         session = stripe.billing_portal.Session.create(
             customer=cust_id,
-            return_url='https://example.com/account',
+            return_url=cls.STRIPE_SESSION_RETURN_URL,
         )
         return session
 
@@ -131,7 +135,7 @@ class StripeSubscriptionService:
             )
             return updatedSubscription
         except Exception as e:
-            return False
+            raise e
 
     @classmethod
     def cancel_subscription(cls, sub_id):
@@ -146,7 +150,7 @@ class StripeSubscriptionService:
             deletedSubscription = stripe.Subscription.delete(sub_id)
             return deletedSubscription
         except Exception as e:
-            pass
+            raise e
         return None
 
     @classmethod
@@ -157,6 +161,7 @@ class StripeSubscriptionService:
 
         :param cust_id: The ID of an existing customer.
         :param price_id: The ID of the price object.
+        :param behavior: The behavior of the price object.
         """
         subscriptions = stripe.Subscription.list(customer=cust_id, status=StripeSubStatus.INCOMPLETE, price=price_id)
         subscriptions = subscriptions.get('data')
@@ -213,7 +218,7 @@ class StripeSubscriptionService:
             cls.log_stripe_event(event)
         except stripe.error.SignatureVerificationError as e:
             # Invalid signature
-            return False
+            raise e
         return event
 
     @classmethod

@@ -9,9 +9,7 @@ from rest_framework.viewsets import ViewSet
 from .models import StripeSetting, AppleIAPProduct, SubscriptionPlan
 from .serializers import StripeSettingSerializer, AppleIAPProductSerializer, AppleIAPSerializer, \
     SubscriptionPlanSerializer
-from .services.ApplePayment import ApplePaymentService
-from .services.Stripe import StripeService
-from .services.StripeSubscription import StripeSubscriptionService
+from .services import ApplePaymentService, StripeService, StripeSubscriptionService
 
 
 class PaymentSheetView(APIView):
@@ -192,6 +190,9 @@ class StripeWebhookView(APIView):
 
 
 class AppleIAProductsView(generics.ListAPIView):
+    """
+        Returns all the active Apple In-App products.
+    """
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.AllowAny]
     queryset = AppleIAPProduct.objects.filter(is_active=True)
@@ -206,16 +207,15 @@ class AppleIAPayment(ViewSet):
     def create(self, request):
         """
         Verify an Apple receipt.
+        :param request: Object containing receipt data.
         """
         serializer = self.serializer_class(data=request.data)
-        data = None
-        if serializer.is_valid(raise_exception=True):
-            verify_receipt, success = ApplePaymentService.verify_apple_receipt(request.data)
-            print('verify_receipt', verify_receipt)
-            if success:
-                data = "success"
-            else:
-                data = "fail"
+        serializer.is_valid(raise_exception=True)
+        verify_receipt, success = ApplePaymentService().verify_apple_receipt(receipt_data=request.data)
+        print('verify_receipt', verify_receipt)
+        data = "fail"
+        if success:
+            data = "success"
         return Response({
             'success': True,
             'result': data,

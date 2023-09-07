@@ -20,7 +20,7 @@ class StripeService:
         :param cls: Optional param
         :param connected_stripe_account_id:
         :param application_fee_amount:
-        :param cus_id: ID of the Customer PaymentIntent belongs to, if one exists..
+        :param cus_id: ID of the Customer PaymentIntent belongs to, if one exists.
         :param cents: Amount intended to be collected.
 
         """
@@ -54,11 +54,13 @@ class StripeService:
     @classmethod
     def get_payments_history(cls, cus_id, limit=100, offset=0):
         """
-        get_payments_history returns an array of up to `limit` PaymentIntents,  Each entry in the array is a separate PaymentIntent object. If no more PaymentIntents are available, the resulting array will be empty.
+        get_payments_history returns an array of up to `limit` PaymentIntents,  Each entry in the array is a separate PaymentIntent object.
+        If no more PaymentIntents are available, the resulting array will be empty.
 
         :param cls: Optional param
         :param cus_id: Only return PaymentIntents for the customer specified by this customer ID.
         :param limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 10.
+        :param offset: Offset can range between 1 and 100, and the default is 10.
 
         """
         return stripe.PaymentIntent.list(
@@ -66,14 +68,17 @@ class StripeService:
         ).get('data', [])
 
     @classmethod
-    def get_payments_methods(cls, cus_id, type='card', limit=100, offset=0):
+    def get_payments_methods(cls, cus_id, payment_type='card', limit=100, offset=0):
         """
-        get_payments_methods returns a list of PaymentMethods attached to the StripeAccount. If no more PaymentMethods are available, the resulting array will be empty.
+        get_payments_methods returns a list of PaymentMethods attached to the StripeAccount.
+        If no more PaymentMethods are available, the resulting array will be empty.
 
         :param cls: Optional param
         :param cus_id: The ID of the customer whose PaymentMethods will be retrieved.
         :param limit: A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 10.
+        :param payment_type: Payment type that can be used for transaction.
+        :param offset: Offset can range between 1 and 100, and the default is 10.
 
 
         """
-        return stripe.PaymentMethod.list(customer=cus_id, type=type, limit=limit, offset=offset).get('data', [])
+        return stripe.PaymentMethod.list(customer=cus_id, type=payment_type, limit=limit, offset=offset).get('data', [])

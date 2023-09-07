@@ -70,7 +70,7 @@ class SubscriptionPlan(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
-        from modules.payments.payments.services.StripeSubscription import StripeSubscriptionService
+        from modules.payments.payments.services.stripe_subscription import StripeSubscriptionService
         p = StripeSubscriptionService.get_price_details(self.price_id)
         self.price = p.unit_amount / 100
         self.plan_type = p.type

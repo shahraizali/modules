@@ -4,7 +4,7 @@
 
 Payments module allow user to select a subscription and pay through the stripe payment and Select Apple In-app Purchase
 and verify payments. It helps user to accept payments, send payouts globally and users can select subscription plan and
-price, and click on the subscribe.
+price, and click on the subscribe. User can select apple In-App sandbox or live mode.
 
 The following are the scope features of this module:
 
@@ -16,6 +16,7 @@ The following are the scope features of this module:
 - Get the details of subscription plans
 - Create the subscription plans (Free, Monthly, Annual)
 - Cancel the subscribed plans
+- Stripe webhook to handle the events
 - Create Apple In-App products
 - Get Apple In-App products
 - Verify Apple In-App product payments
@@ -33,6 +34,10 @@ The following are the scope features of this module:
 STRIPE_SECRET_KEY='sk_test_xxxxxxx'
 CONNECTED_STRIPE_ACCOUNT_ID='acct_xxxxx'
 STRIPE_WEBHOOK_SECRET='whsec_xxxxxxx'
+STRIPE_SESSION_RETURN_URL='https://example.com/account'
+APPLE_PRODUCT_VERIFY_URL='apple product url'
+APPLE_RECEIPT_VERIFY_URL='apple sandbox or live url'
+APPLE_SANDBOX_MODE='for sandbox set True'
 ```
 
 ## 3rd party setup
@@ -42,6 +47,7 @@ Create `Stripe` developer account:
 - Sign up for Stripe at https://dashboard.stripe.com/register.
 - After successful sign up, on the dashboard click `Home` tab.
 - Copy the stripe `Secrete Key` and `Publish Key` for later use.
+
   ![stripe](https://user-images.githubusercontent.com/76822297/227866954-e3fd72a4-e8c5-46e2-84d8-d0e59bc91a5c.png)
 
 ## Dependencies
@@ -54,16 +60,17 @@ Dependencies used:
 
 ## API details
 
-| Api Name                                         |                                        Param                                        | Description                                                                                                                   |
-|--------------------------------------------------|:-----------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------|
-| `/modules/payments/get_payments_history/`        |                                     -No Params-                                     | Returns of all the payments done by the users.                                                                                |
-| `/modules/payments/create_payment_intent_sheet/` |                              object `{amount, cus_id}`                              | Takes object containing amount, cus_id and returns an array containing history of all the payments done by the users.         |
-| `/modules/payments/get_payments_methods/`        |                                     -No Params-                                     | Returns an array containing the available payments methods done by the users.                                                 |
-| `/modules/payments/buy_subscription_plan/`       |                             body_params  `'price_tier'`                             | Takes `price_tier` which is price id from the selected plan. Buys that selected plan against `price_tier`.                    |
-| `/modules/payments/get_subscription_plans/`      |                                          -                                          | Returns the collection/list of all the `subscription_plans` that can be subscribed by a user.                                 |
-| `/modules/payments/cancel_subscription_plan/`    |                                body_params `sub_id`                                 | Takes subscription id `sub_id`  of subscription plan is to be cancelled. Deletes the  subscription plan against the `sub_id`. |
-| `/modules/payments/apple/get_products/`          |                     body_params `{name, product_id, is_active}`                     | Create an object of apple in-app purchase product and returns list of available products.                                     |
-| `/modules/payments/apple/verify/receipt/`        | body_params `{productId, transactionDate, transactionId, transactionReceipt, user}` | Takes Apple in-app object and verify payment receipts.                                                                        |
+| Api Name                                         |                                        Param                                        | Description                                                                                                                             |
+|--------------------------------------------------|:-----------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------|
+| `/modules/payments/get_payments_history/`        |                                     -No Params-                                     | Returns of all the payments done by the users.                                                                                          |
+| `/modules/payments/create_payment_intent_sheet/` |                              object `{amount, cus_id}`                              | Takes object containing amount, cus_id and returns an array containing history of all the payments done by the users.                   |
+| `/modules/payments/get_payments_methods/`        |                                     -No Params-                                     | Returns an array containing the available payments methods done by the users.                                                           |
+| `/modules/payments/buy_subscription_plan/`       |                             body_params  `'price_tier'`                             | Takes `price_tier` which is price id from the selected plan. Buys that selected plan against `price_tier`.                              |
+| `/modules/payments/get_subscription_plans/`      |                                          -                                          | Returns the collection/list of all the `subscription_plans` that can be subscribed by a user.                                           |
+| `/modules/payments/cancel_subscription_plan/`    |                                body_params `sub_id`                                 | Takes subscription id `sub_id`  of subscription plan is to be cancelled. Deletes the  subscription plan against the `sub_id`.           |
+| `/modules/payments/stripe_webhook/`              |               body_params {`cus_id`, `price_id`, `sub_id`, `plan_id`}               | Takes an object of event and Handle events created by user and Returns the subscription Data to store locally and logs of Subscription. |
+| `/modules/payments/apple/get_products/`          |                     body_params `{name, product_id, is_active}`                     | Create an object of apple in-app purchase product and returns list of available products.                                               |
+| `/modules/payments/apple/verify/receipt/`        | body_params `{productId, transactionDate, transactionId, transactionReceipt, user}` | Takes Apple in-app object and verify payment receipts.                                                                                  |
 
 ### Module Specifications
 
