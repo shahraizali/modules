@@ -1,0 +1,18 @@
+{
+    "name": "@modules/corporate-event",
+    "version": "1.0.1",
+    "description": "corporate-event",
+    "private": true,
+    "main": "index.js",
+    "author": "Crowdbotics",
+    "license": "ISC",
+    "dependencies": {
+       
+    },
+    "x-dependencies": {
+        "@react-navigation/bottom-tabs": "^6.5.11",
+        "react-native-webview": "^13.6.0",
+        "moment": "^2.29.4",
+        "react-native-encrypted-storage": "^4.0.3",
+    }
+}
